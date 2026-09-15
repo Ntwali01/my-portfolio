@@ -13,7 +13,7 @@ const navItems = [
 export function Navigation() {
   return (
     <PillNav
-      items={navItems}
+      items={navItems}      
       baseColor="oklch(0.12 0 0)"
       pillColor="oklch(0.20 0 0)"
       hoveredPillTextColor="oklch(0.12 0 0)"
