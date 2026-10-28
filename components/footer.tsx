@@ -1,7 +1,8 @@
 'use client';
 
-import { Github, Linkedin, Twitter, Mail } from 'lucide-react';
+import { Mail, Phone, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+import { contactInfo } from '@/lib/portfolio-data';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -37,85 +38,165 @@ export function Footer() {
       }} />
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 1152, margin: '0 auto', padding: '48px 24px 32px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 32, marginBottom: 40 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 32, marginBottom: 40 }}>
 
           {/* Brand */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <h3 style={{ margin: 0, fontSize: 28, fontWeight: 900, color: '#5df7c1', letterSpacing: '-1px' }}>CA</h3>
-            <p style={{ margin: 0, fontSize: 13.5, color: 'rgba(255,255,255,0.72)', lineHeight: 1.7 }}>
-              Full-Stack Developer & Creative Technologist building digital solutions.
+            <p style={{ margin: 0, fontSize: 13.5, color: 'rgba(255,255,255,0.78)', lineHeight: 1.7 }}>
+              Cyubahiro Ntwali Adore
+            </p>
+            <p style={{ margin: 0, fontSize: 12.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
+              Software Developer | Robotics Teleoperation | Quality Assurance based in Rwanda.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
             <h4 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              Quick Links
+              Quick Navigation
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {['#about', '#projects', '#services', '#contact'].map((href, i) => (
-                <Link key={href} href={href} style={{
-                  fontSize: 14, color: 'rgba(255,255,255,0.65)',
-                  textDecoration: 'none', transition: 'color 0.2s',
-                }}
+              {[
+                { href: '#about', label: 'About' },
+                { href: '#skills', label: 'Skills' },
+                { href: '#services', label: 'Services' },
+                { href: '#projects', label: 'Projects' },
+                { href: '#experience', label: 'Experience' },
+                { href: '#how-i-work', label: 'How I Work' },
+                { href: '#contact', label: 'Contact' },
+              ].map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  style={{
+                    fontSize: 13.5,
+                    color: 'rgba(255,255,255,0.65)',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s',
+                  }}
                   onMouseEnter={e => (e.currentTarget.style.color = '#5df7c1')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
                 >
-                  {['About', 'Projects', 'Services', 'Contact'][i]}
+                  {label}
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Services */}
+          {/* Core Areas */}
           <div>
             <h4 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              Services
+              Focus Areas
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {['Web Development', 'UI/UX Design', 'AI Solutions', 'Content Creation'].map((s) => (
-                <span key={s} style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)' }}>{s}</span>
+              {[
+                'Robotics Teleoperation',
+                'Video Quality Assurance & SOPs',
+                'Modern Web Development',
+                'UI/UX Design',
+                'Workflow Automation',
+              ].map((s) => (
+                <span key={s} style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.65)' }}>{s}</span>
               ))}
             </div>
           </div>
 
-          {/* Follow Me */}
+          {/* Verified Contact Details */}
           <div>
             <h4 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              Follow Me
+              Direct Contact
             </h4>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              {[
-                { href: 'https://github.com', icon: <Github size={18} />, label: 'GitHub' },
-                { href: 'https://linkedin.com', icon: <Linkedin size={18} />, label: 'LinkedIn' },
-                { href: 'https://twitter.com', icon: <Twitter size={18} />, label: 'Twitter' },
-                { href: 'mailto:cyubahirontwaliadore@gmail.com', icon: <Mail size={18} />, label: 'Email' },
-              ].map(({ href, icon, label }) => (
-                <a key={label} href={href} target={href.startsWith('http') ? '_blank' : undefined}
-                  rel="noopener noreferrer" aria-label={label}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <a
+                href={`mailto:${contactInfo.email}`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  fontSize: 13,
+                  color: 'rgba(255,255,255,0.8)',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#5df7c1')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
+              >
+                <div style={{
+                  width: 32, height: 32, borderRadius: 8, display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  background: 'rgba(93,247,193,0.1)', border: '1px solid rgba(93,247,193,0.25)',
+                  color: '#5df7c1',
+                }}>
+                  <Mail size={16} />
+                </div>
+                <span>{contactInfo.email}</span>
+              </a>
+
+              {contactInfo.phone && (
+                <a
+                  href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`}
                   style={{
-                    width: 40, height: 40, borderRadius: 10, display: 'flex',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    fontSize: 13,
+                    color: 'rgba(255,255,255,0.8)',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#00d6ff')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
+                >
+                  <div style={{
+                    width: 32, height: 32, borderRadius: 8, display: 'flex',
                     alignItems: 'center', justifyContent: 'center',
-                    background: 'rgba(93,247,193,0.08)',
-                    border: '1px solid rgba(93,247,193,0.2)',
-                    color: 'rgba(255,255,255,0.75)',
-                    transition: 'background 0.2s, color 0.2s, border-color 0.2s',
+                    background: 'rgba(0,214,255,0.1)', border: '1px solid rgba(0,214,255,0.25)',
+                    color: '#00d6ff',
+                  }}>
+                    <Phone size={16} />
+                  </div>
+                  <span>{contactInfo.phone}</span>
+                </a>
+              )}
+
+              {contactInfo.github && (
+                <a
+                  href={contactInfo.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 13,
+                    color: 'rgba(255,255,255,0.7)',
                     textDecoration: 'none',
                   }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = 'rgba(93,247,193,0.18)';
-                    e.currentTarget.style.color = '#5df7c1';
-                    e.currentTarget.style.borderColor = 'rgba(93,247,193,0.5)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = 'rgba(93,247,193,0.08)';
-                    e.currentTarget.style.color = 'rgba(255,255,255,0.75)';
-                    e.currentTarget.style.borderColor = 'rgba(93,247,193,0.2)';
+                >
+                  <span>GitHub Profile</span>
+                  <ExternalLink size={14} />
+                </a>
+              )}
+
+              {contactInfo.linkedin && (
+                <a
+                  href={contactInfo.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    fontSize: 13,
+                    color: 'rgba(255,255,255,0.7)',
+                    textDecoration: 'none',
                   }}
                 >
-                  {icon}
+                  <span>LinkedIn Profile</span>
+                  <ExternalLink size={14} />
                 </a>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -125,17 +206,12 @@ export function Footer() {
 
         {/* Bottom */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-          <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>
+          <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
             © {currentYear} Cyubahiro Ntwali Adore. All rights reserved.
           </p>
-          <div style={{ display: 'flex', gap: 24 }}>
-            {['Privacy Policy', 'Terms of Service'].map((t) => (
-              <a key={t} href="#" style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#5df7c1')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
-              >{t}</a>
-            ))}
-          </div>
+          <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
+            Software Developer · Robotics Teleoperation · Quality Assurance
+          </p>
         </div>
       </div>
     </footer>

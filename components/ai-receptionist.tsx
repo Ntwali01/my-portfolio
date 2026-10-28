@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Send, ChevronDown } from 'lucide-react';
+import { Send, X, Minimize2, Sparkles, Bot, User } from 'lucide-react';
+import { contactInfo } from '@/lib/portfolio-data';
 
 type Message = {
   id: string;
@@ -10,40 +11,26 @@ type Message = {
 };
 
 const starterMessage =
-  "Hello! I'm Adore AI Receptionist. I can help you understand Cyubahiro's work, recommend the right service, or guide you to start a project conversation.";
+  "Hi! I'm Adore's AI assistant. Ask me anything about Cyubahiro's robotics work at Neotix, QA workflows, web projects like SIMS or EduConnect, or how to get in touch.";
 
-const suggestionChips = [
-  'Start a web project',
-  'Need an AI receptionist',
-  'See portfolio highlights',
-  'What services do you offer?',
-  'How much does a website cost?',
-  'Build me a landing page',
-  'I need a mobile app',
-  'What tech stack do you use?',
-  'Can you build an e-commerce site?',
-  'Tell me about your experience',
-  'Do you do UI/UX design?',
-  'I need an AI chatbot',
-  'How long does a project take?',
-  'Can you redesign my website?',
-  'What is your availability?',
-  'Do you work with startups?',
-  'I need a dashboard built',
-  'Can you integrate an API?',
-  'Tell me about your projects',
-  'Do you offer maintenance?',
-  'I need a portfolio website',
-  'Can you build a SaaS product?',
-  'What makes you different?',
-  'I have a project idea',
-  'Do you do freelance work?',
+const uniqueChipsRow1 = [
+  'Neotix robotics experience',
+  'What hardware have you used?',
+  'SOP-based video QA role',
+  'Tell me about EduConnect',
+  'What is SIMS?',
 ];
 
-const row1 = suggestionChips.slice(0, 13);
-const row2 = suggestionChips.slice(12);
+const uniqueChipsRow2 = [
+  'DEVCORE-AI project',
+  'Frontend technologies',
+  'What services do you offer?',
+  'How can I contact you?',
+  'What is your background?',
+];
 
 export function AIReceptionist() {
+  const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [hasEngaged, setHasEngaged] = useState(false);
@@ -57,12 +44,15 @@ export function AIReceptionist() {
   const collapsedInputRef = useRef<HTMLInputElement>(null);
   const messageIdRef = useRef(1);
 
+  useEffect(() => { setMounted(true); }, []);
+
   useEffect(() => {
-    const onScroll = () => setIsVisible(window.scrollY > 200);
+    if (!mounted) return;
+    const onScroll = () => setIsVisible(window.scrollY > 150);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [mounted]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -70,7 +60,10 @@ export function AIReceptionist() {
   }, [messages, isOpen, isTyping]);
 
   useEffect(() => {
-    if (isOpen) setTimeout(() => inputRef.current?.focus(), 350);
+    if (isOpen) {
+      const timer = setTimeout(() => inputRef.current?.focus(), 350);
+      return () => clearTimeout(timer);
+    }
   }, [isOpen]);
 
   const pushAssistantReply = async (nextMessages: Message[]) => {
@@ -82,17 +75,18 @@ export function AIReceptionist() {
         body: JSON.stringify({ messages: nextMessages.map((m) => ({ role: m.role, text: m.text })) }),
       });
       const data = await res.json();
-      if (!res.ok || !data.text) {
-        throw new Error(data.error || 'Assistant request failed.');
-      }
-      setMessages((cur) => [...cur, { id: `assistant-${messageIdRef.current++}`, role: 'assistant', text: data.text }]);
-    } catch (err) {
+      if (!res.ok && !data.text) throw new Error(data.error || 'Unavailable.');
+      setMessages((cur) => [
+        ...cur,
+        { id: `assistant-${messageIdRef.current++}`, role: 'assistant', text: data.text || 'You can reach Cyubahiro directly at cyubahirontwaliadore@gmail.com.' },
+      ]);
+    } catch {
       setMessages((cur) => [
         ...cur,
         {
           id: `assistant-${messageIdRef.current++}`,
           role: 'assistant',
-          text: "I'm currently unavailable. For immediate help, reach Cyubahiro directly:\n\n📧 cyubahirontwaliadore@gmail.com\n📞 +250 798 221 657",
+          text: `I'm currently in offline mode. You can reach Cyubahiro directly at ${contactInfo.email}${contactInfo.phone ? ` or call ${contactInfo.phone}` : ''}.`,
         },
       ]);
     } finally {
@@ -125,317 +119,310 @@ export function AIReceptionist() {
     submitMessage(val);
   };
 
+  if (!mounted) return null;
+
   return (
     <>
       <style>{`
-        @keyframes ai-fade-up {
-          from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* ── Keyframes ── */
+        @keyframes ai-rise {
+          from { opacity: 0; transform: translateX(-50%) translateY(18px) scale(0.97); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1);    }
         }
-        @keyframes ai-slide-right {
-          from { opacity: 0; transform: translateX(60px) scale(0.96); }
-          to   { opacity: 1; transform: translateX(0) scale(1); }
+        @keyframes ai-drop {
+          from { opacity: 0; transform: translateY(16px) scale(0.96); }
+          to   { opacity: 1; transform: translateY(0)    scale(1);    }
         }
-        @keyframes ai-dot-bounce {
-          0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
-          40%            { transform: translateY(-6px); opacity: 1; }
+        @keyframes ai-dot-pulse {
+          0%, 80%, 100% { transform: translateY(0);   opacity: 0.3; }
+          40%           { transform: translateY(-5px); opacity: 1;   }
         }
-        .ai-bar {
+        @keyframes ai-marquee-left  { 0% { transform: translateX(0);    } 100% { transform: translateX(-50%); } }
+        @keyframes ai-marquee-right { 0% { transform: translateX(-50%); } 100% { transform: translateX(0);    } }
+        @keyframes ai-bubble-pop {
+          0%   { transform: scale(0.8); opacity: 0; }
+          70%  { transform: scale(1.08); }
+          100% { transform: scale(1);   opacity: 1; }
+        }
+
+        /* ── Collapsed bar ── */
+        .aib-bar {
           position: fixed;
-          bottom: 28px;
+          bottom: 24px;
           left: 50%;
           transform: translateX(-50%);
-          z-index: 9999;
-          width: min(580px, calc(100vw - 32px));
-          transition: opacity 0.35s ease, transform 0.35s cubic-bezier(.22,1,.36,1);
+          z-index: 40;
+          width: min(580px, calc(100vw - 24px));
+          transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.22,1,.36,1);
         }
-        .ai-bar.hidden {
-          opacity: 0;
-          pointer-events: none;
-          transform: translateX(-50%) translateY(16px);
-        }
-        .ai-bar.visible {
-          animation: ai-fade-up 0.38s cubic-bezier(.22,1,.36,1) both;
-        }
-        .ai-chat {
+        .aib-bar.aib-hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px) scale(0.97); }
+        .aib-bar.aib-visible { animation: ai-rise 0.42s cubic-bezier(.22,1,.36,1) both; }
+
+        /* ── Chat panel ── */
+        .aib-chat {
           position: fixed;
           bottom: 20px;
           right: 20px;
-          z-index: 9999;
-          width: min(400px, calc(100vw - 32px));
-          height: min(580px, calc(100vh - 40px));
+          z-index: 50;
+          width: min(400px, calc(100vw - 28px));
+          height: min(580px, calc(100vh - 36px));
           display: flex;
           flex-direction: column;
           overflow: hidden;
-          background: #fff;
-          border-radius: 18px;
-          box-shadow: 0 20px 70px rgba(0,0,0,0.22);
-          transition: opacity 0.35s ease, transform 0.35s cubic-bezier(.22,1,.36,1);
+          border-radius: 20px;
+          border: 1px solid rgba(255,255,255,0.09);
+          box-shadow: 0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(93,247,193,0.06);
+          transition: opacity 0.32s ease, transform 0.32s cubic-bezier(.22,1,.36,1);
+          background: #0c1118;
         }
-        .ai-chat.hidden {
-          opacity: 0;
-          pointer-events: none;
-          transform: translateX(80px) scale(0.93);
+        .aib-chat.aib-hidden  { opacity: 0; pointer-events: none; transform: translateY(22px) scale(0.95); }
+        .aib-chat.aib-visible { animation: ai-drop 0.36s cubic-bezier(.22,1,.36,1) both; }
+
+        /* ── Floating bubble ── */
+        .aib-bubble {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 40;
+          animation: ai-bubble-pop 0.4s cubic-bezier(.22,1,.36,1) both;
         }
-        .ai-chat.visible {
-          animation: ai-chat-slide-in 0.6s cubic-bezier(.22,1,.36,1) both;
+
+        /* ── Dots ── */
+        .aib-dot { animation: ai-dot-pulse 1.4s infinite ease-in-out; }
+
+        /* ── Marquee ── */
+        .aib-marquee-track { display: flex; gap: 8px; width: max-content; }
+        .aib-marquee-left  { animation: ai-marquee-left  38s linear infinite; }
+        .aib-marquee-right { animation: ai-marquee-right 44s linear infinite; }
+        .aib-marquee-wrap {
+          overflow: hidden;
+          mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+          -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
         }
-        .ai-dot { animation: ai-dot-bounce 1.3s infinite ease-in-out; }
-        .ai-chip:hover { background: rgba(0,214,255,0.18) !important; color: #5df7c1 !important; border-color: rgba(0,214,255,0.4) !important; }
-        .ai-send-btn:hover { opacity: 0.82; transform: scale(1.05); }
-        .ai-send-btn { transition: opacity 0.2s, transform 0.2s; }
-        .ai-close-btn:hover { background: #e5e7eb !important; }
-        .ai-msg-scroll::-webkit-scrollbar { width: 4px; }
-        .ai-msg-scroll::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
-        @keyframes ai-bubble-pop {
-          0%   { opacity: 0; transform: scale(0.5); }
-          70%  { transform: scale(1.12); }
-          100% { opacity: 1; transform: scale(1); }
+        .aib-marquee-wrap:hover .aib-marquee-left,
+        .aib-marquee-wrap:hover .aib-marquee-right { animation-play-state: paused; }
+
+        /* ── Chip hover ── */
+        .aib-chip:hover {
+          background: rgba(93,247,193,0.1) !important;
+          color: #5df7c1 !important;
+          border-color: rgba(93,247,193,0.35) !important;
         }
-        @keyframes ai-green-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(93,247,193,0.6); }
-          50%       { box-shadow: 0 0 0 6px rgba(93,247,193,0); }
+
+        /* ── Scrollbar ── */
+        .aib-scroll::-webkit-scrollbar { width: 3px; }
+        .aib-scroll::-webkit-scrollbar-track { background: transparent; }
+        .aib-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+
+        /* ── Gradient border ring on bar ── */
+        .aib-ring {
+          background: linear-gradient(135deg, rgba(93,247,193,0.25), rgba(0,214,255,0.15), rgba(82,39,255,0.2));
+          border-radius: 20px;
+          padding: 1px;
         }
-        .ai-bubble { animation: ai-bubble-pop 0.4s cubic-bezier(.22,1,.36,1) both; }
-        .ai-bubble:hover { transform: scale(1.08); }
-        .ai-bubble { transition: transform 0.2s; }
-        @keyframes ai-marquee-left {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        .aib-ring-inner {
+          background: rgba(12,17,24,0.96);
+          border-radius: 19px;
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
         }
-        @keyframes ai-marquee-right {
-          0%   { transform: translateX(-50%); }
-          100% { transform: translateX(0); }
-        }
-        @keyframes ai-chat-slide-in {
-          0%   { opacity: 0; transform: translateX(120px) scale(0.92); }
-          55%  { opacity: 1; transform: translateX(-6px) scale(1.01); }
-          100% { opacity: 1; transform: translateX(0) scale(1); }
-        }
-        .ai-marquee-track { display: flex; gap: 8px; width: max-content; }
-        .ai-marquee-left  { animation: ai-marquee-left  44s linear infinite; }
-        .ai-marquee-right { animation: ai-marquee-right 50s linear infinite; }
-        .ai-marquee-wrap:hover .ai-marquee-left  { animation-play-state: paused; }
-        .ai-marquee-wrap:hover .ai-marquee-right { animation-play-state: paused; }
-        .ai-marquee-wrap  { overflow: hidden; mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); }
       `}</style>
 
-      {/* ── COLLAPSED BAR — centered, only when not engaged ── */}
-      <div className={`ai-bar ${!isVisible || isOpen || hasEngaged ? 'hidden' : 'visible'}`}>
-        <div style={{
-          background: 'rgba(20,24,28,0.93)',
-          border: '1px solid rgba(255,255,255,0.10)',
-          borderRadius: 20,
-          boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
-          backdropFilter: 'blur(20px)',
-          padding: '10px 12px 12px',
-        }}>
-          <form onSubmit={handleCollapsedSubmit} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Avatar */}
-            <div style={{
-              width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-              background: '#000',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 0 3px rgba(0,214,255,0.18)',
-            }}>
-              <span style={{ fontSize: 15, fontWeight: 800, color: '#5df7c1', letterSpacing: '-0.5px' }}>CA</span>
+      {/* ── COLLAPSED BAR ── */}
+      <div className={`aib-bar ${!isVisible || isOpen || hasEngaged ? 'aib-hidden' : 'aib-visible'}`}>
+        <div className="aib-ring">
+          <div className="aib-ring-inner p-2.5 sm:p-3">
+            {/* Avatar + label row */}
+            <div className="flex items-center gap-2 mb-2.5 px-1">
+              <div className="relative shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5df7c1]/20 to-[#5227FF]/20 border border-[#5df7c1]/30 flex items-center justify-center">
+                  <Sparkles className="w-3.5 h-3.5 text-[#5df7c1]" />
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#5df7c1] border-2 border-[#0c1118] animate-pulse" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-semibold text-white/90 leading-none">Adore AI Assistant</p>
+                <p className="text-[10px] text-[#5df7c1]/70 mt-0.5">Ask about projects, skills or experience</p>
+              </div>
             </div>
 
-            {/* Input */}
-            <input
-              ref={collapsedInputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask any question"
-              style={{
-                flex: 1, background: '#fff', border: 'none', borderRadius: 50,
-                padding: '11px 18px', fontSize: 15, color: '#111',
-                outline: 'none', boxSizing: 'border-box',
-              }}
-            />
+            {/* Input row */}
+            <form onSubmit={handleCollapsedSubmit} className="flex items-center gap-2">
+              <input
+                ref={collapsedInputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Ask me anything about Cyubahiro..."
+                suppressHydrationWarning
+                className="flex-1 bg-white/[0.06] border border-white/[0.08] focus:border-[#5df7c1]/40 rounded-full px-4 py-2 sm:py-2.5 text-xs sm:text-[13px] text-white placeholder:text-white/35 outline-none transition-colors"
+              />
+              <button
+                type="submit"
+                aria-label="Send"
+                className="w-9 h-9 rounded-full bg-gradient-to-br from-[#5df7c1] to-[#00d6ff] text-black shrink-0 flex items-center justify-center hover:opacity-90 transition-all cursor-pointer shadow-lg shadow-[#5df7c1]/20"
+              >
+                <Send className="w-3.5 h-3.5" />
+              </button>
+            </form>
 
-            {/* Send */}
-            <button type="submit" className="ai-send-btn" style={{
-              width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg,#00d6ff,#5df7c1)',
-              border: 'none', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Send style={{ width: 17, height: 17, color: '#000' }} />
-            </button>
-          </form>
-
-          {/* Marquee chips — row 1 scrolls left, row 2 scrolls right */}
-          <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 7 }}>
-            {[
-              { items: row1, dir: 'ai-marquee-left' },
-              { items: row2, dir: 'ai-marquee-right' },
-            ].map(({ items, dir }, rowIdx) => (
-              <div key={rowIdx} className="ai-marquee-wrap">
-                <div className={`ai-marquee-track ${dir}`}>
-                  {[...items, ...items].map((chip, i) => (
-                    <button
-                      key={`${chip}-${i}`}
-                      type="button"
-                      className="ai-chip"
-                      onClick={() => { setInputValue(''); submitMessage(chip); }}
-                      style={{
-                        background: 'rgba(255,255,255,0.07)',
-                        border: '1px solid rgba(255,255,255,0.13)',
-                        borderRadius: 50, padding: '6px 16px',
-                        fontSize: 12.5, color: 'rgba(255,255,255,0.68)',
-                        cursor: 'pointer', whiteSpace: 'nowrap',
-                        transition: 'background 0.2s, color 0.2s, border-color 0.2s',
-                        flexShrink: 0,
-                      }}
-                    >{chip}</button>
-                  ))}
+            {/* Marquee chips */}
+            <div className="mt-2.5 flex flex-col gap-1.5">
+              {[
+                { items: uniqueChipsRow1, dir: 'aib-marquee-left' },
+                { items: uniqueChipsRow2, dir: 'aib-marquee-right' },
+              ].map(({ items, dir }, idx) => (
+                <div key={idx} className="aib-marquee-wrap">
+                  <div className={`aib-marquee-track ${dir}`}>
+                    {[...items, ...items].map((chip, i) => (
+                      <button
+                        key={`${chip}-${i}`}
+                        type="button"
+                        className="aib-chip px-3 py-1 rounded-full text-[11px] text-white/55 bg-white/[0.05] border border-white/[0.08] whitespace-nowrap cursor-pointer transition-all"
+                        onClick={() => { setInputValue(''); submitMessage(chip); }}
+                      >
+                        {chip}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── EXPANDED CHAT — slides in from right ── */}
-      <div className={`ai-chat ${!isVisible || !isOpen ? 'hidden' : 'visible'}`}>
+      {/* ── EXPANDED CHAT WINDOW ── */}
+      <div className={`aib-chat ${!isVisible || !isOpen ? 'aib-hidden' : 'aib-visible'}`}>
 
         {/* Header */}
-        <div style={{
-          padding: '14px 16px', borderBottom: '1px solid #f0f0f0',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          background: '#fff', flexShrink: 0,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{
-              width: 46, height: 46, borderRadius: '50%',
-              background: '#000',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span style={{ fontSize: 16, fontWeight: 800, color: '#5df7c1', letterSpacing: '-0.5px' }}>CA</span>
+        <div className="shrink-0 px-4 py-3 flex items-center justify-between"
+          style={{ background: 'linear-gradient(135deg, #0f1823 0%, #111b2a 100%)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#5df7c1]/20 to-[#5227FF]/30 border border-[#5df7c1]/25 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-[#5df7c1]" />
+              </div>
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#5df7c1] border-2 border-[#0f1823] animate-pulse" />
             </div>
             <div>
-              <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#111' }}>Adore AI Receptionist</p>
-              <p style={{ margin: 0, fontSize: 12, color: '#999' }}>AI Sales Rep · Portfolio Concierge</p>
+              <p className="text-[13px] font-semibold text-white leading-none">Adore Assistant</p>
+              <p className="text-[11px] text-white/40 mt-0.5">Portfolio Guide · Robotics & Web</p>
             </div>
           </div>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="ai-close-btn"
-            aria-label="Minimize"
-            style={{
-              width: 36, height: 36, borderRadius: 10,
-              background: '#f3f4f6', border: 'none', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'background 0.2s',
-            }}
-          >
-            <ChevronDown style={{ width: 18, height: 18, color: '#555' }} />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setIsOpen(false)}
+              aria-label="Minimise"
+              className="w-7 h-7 rounded-lg bg-white/[0.05] hover:bg-white/10 text-white/50 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <Minimize2 className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => { setIsOpen(false); setHasEngaged(false); setMessages([{ id: 'welcome', role: 'assistant', text: starterMessage }]); }}
+              aria-label="Close"
+              className="w-7 h-7 rounded-lg bg-white/[0.05] hover:bg-red-500/20 text-white/50 hover:text-red-400 flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
         {/* Messages */}
-        <div
-          ref={viewportRef}
-          className="ai-msg-scroll"
-          style={{
-            flexGrow: 1, padding: '16px', overflowY: 'auto',
-            display: 'flex', flexDirection: 'column', gap: 12,
-            background: '#f9fafb',
-          }}
-        >
+        <div ref={viewportRef} className="aib-scroll flex-grow overflow-y-auto p-4 flex flex-col gap-3"
+          style={{ background: '#0a0f17' }}>
           {messages.map((msg) => (
-            <div key={msg.id} style={{
-              maxWidth: '82%',
-              alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-              background: msg.role === 'user' ? '#e5e7eb' : '#fff',
-              color: '#111',
-              borderRadius: msg.role === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-              padding: '10px 14px', fontSize: 14, lineHeight: 1.65,
-              boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-            }}>
-              {msg.text}
+            <div key={msg.id} className={`flex gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              {/* Avatar */}
+              <div className={`w-6 h-6 rounded-full shrink-0 mt-0.5 flex items-center justify-center ${
+                msg.role === 'user'
+                  ? 'bg-[#5227FF]/30 border border-[#5227FF]/40'
+                  : 'bg-[#5df7c1]/10 border border-[#5df7c1]/25'
+              }`}>
+                {msg.role === 'user'
+                  ? <User className="w-3 h-3 text-[#a78bfa]" />
+                  : <Bot className="w-3 h-3 text-[#5df7c1]" />}
+              </div>
+              {/* Bubble */}
+              <div className={`max-w-[80%] text-[12.5px] leading-relaxed px-3.5 py-2.5 rounded-2xl ${
+                msg.role === 'user'
+                  ? 'bg-gradient-to-br from-[#5227FF] to-[#7c3aed] text-white rounded-tr-sm'
+                  : 'bg-[#131d2b] text-white/85 border border-white/[0.07] rounded-tl-sm'
+              }`}>
+                {msg.text}
+              </div>
             </div>
           ))}
 
+          {/* Typing indicator */}
           {isTyping && (
-            <div style={{
-              alignSelf: 'flex-start', display: 'flex', gap: 5,
-              background: '#fff', borderRadius: '18px 18px 18px 4px',
-              padding: '12px 16px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-            }}>
-              {[0, 150, 300].map((d) => (
-                <span key={d} className="ai-dot" style={{
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: '#bbb', display: 'inline-block', animationDelay: `${d}ms`,
-                }} />
-              ))}
+            <div className="flex gap-2.5 flex-row">
+              <div className="w-6 h-6 rounded-full shrink-0 bg-[#5df7c1]/10 border border-[#5df7c1]/25 flex items-center justify-center">
+                <Bot className="w-3 h-3 text-[#5df7c1]" />
+              </div>
+              <div className="flex items-center gap-1.5 px-4 py-3 rounded-2xl rounded-tl-sm bg-[#131d2b] border border-white/[0.07]">
+                {[0, 160, 320].map((delay) => (
+                  <span key={delay} className="aib-dot w-1.5 h-1.5 rounded-full bg-[#5df7c1]/70"
+                    style={{ animationDelay: `${delay}ms` }} />
+                ))}
+              </div>
             </div>
           )}
-
         </div>
 
-        {/* Footer */}
-        <div style={{ padding: '12px 16px 14px', borderTop: '1px solid #f0f0f0', background: '#fff', flexShrink: 0 }}>
-          <form onSubmit={handleChatSubmit} style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: '#f3f4f6', borderRadius: 50, padding: '6px 6px 6px 16px',
-          }}>
+        {/* Quick chips in chat */}
+        <div className="shrink-0 px-3 py-2 overflow-x-auto flex gap-2 no-scrollbar"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: '#0c1118' }}>
+          {uniqueChipsRow1.slice(0, 4).map((chip) => (
+            <button key={chip} type="button" onClick={() => submitMessage(chip)}
+              className="aib-chip text-[11px] px-2.5 py-1 rounded-full bg-white/[0.05] border border-white/[0.08] text-white/50 whitespace-nowrap cursor-pointer transition-all shrink-0">
+              {chip}
+            </button>
+          ))}
+        </div>
+
+        {/* Footer input */}
+        <div className="shrink-0 p-3" style={{ borderTop: '1px solid rgba(255,255,255,0.07)', background: '#0f1823' }}>
+          <form onSubmit={handleChatSubmit} className="flex items-center gap-2">
             <input
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask your question…"
-              style={{
-                flex: 1, background: 'transparent', border: 'none',
-                fontSize: 14, color: '#111', outline: 'none',
-              }}
+              placeholder="Type a question..."
+              suppressHydrationWarning
+              className="flex-1 bg-white/[0.06] border border-white/[0.08] focus:border-[#5df7c1]/40 rounded-full px-4 py-2 text-[12.5px] text-white placeholder:text-white/30 outline-none transition-colors"
             />
-            <button type="submit" className="ai-send-btn" style={{
-              width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg,#00d6ff,#5df7c1)',
-              border: 'none', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Send style={{ width: 15, height: 15, color: '#000' }} />
+            <button type="submit" aria-label="Send"
+              className="w-8 h-8 rounded-full bg-gradient-to-br from-[#5df7c1] to-[#00d6ff] text-black flex items-center justify-center hover:opacity-90 transition-all shrink-0 cursor-pointer shadow-md shadow-[#5df7c1]/20">
+              <Send className="w-3 h-3" />
             </button>
           </form>
-          <p style={{ margin: '8px 0 0', fontSize: 11, color: '#bbb', textAlign: 'center' }}>
-            Powered by Adore AI · {' '}
-            <button
-              type="button"
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              style={{ background: 'none', border: 'none', color: '#00d6ff', fontSize: 11, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
-            >Contact directly</button>
+          <p className="mt-1.5 text-center text-[10px] text-white/25">
+            Grounded in verified portfolio data ·{' '}
+            <a href="#contact" onClick={() => setIsOpen(false)} className="text-[#5df7c1]/60 hover:text-[#5df7c1] underline transition-colors">
+              Contact directly
+            </a>
           </p>
         </div>
       </div>
-      {/* ── MINIMIZED BUBBLE — bottom-right, shown after engagement when chat is closed ── */}
-      {isVisible && hasEngaged && !isOpen && (
-        <button
-          className="ai-bubble"
-          onClick={() => setIsOpen(true)}
-          aria-label="Open chat"
-          style={{
-            position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
-            width: 58, height: 58, borderRadius: '50%',
-            background: '#000',
-            border: '2px solid rgba(93,247,193,0.4)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.45)',
-            cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          <span style={{ fontSize: 15, fontWeight: 800, color: '#5df7c1', letterSpacing: '-0.5px' }}>CA</span>
-          {/* Green active dot */}
-          <span style={{
-            position: 'absolute', bottom: 3, right: 3,
-            width: 13, height: 13, borderRadius: '50%',
-            background: '#5df7c1',
-            border: '2px solid #000',
-            animation: 'ai-green-pulse 2s infinite',
-          }} />
-        </button>
+
+      {/* ── FLOATING BUBBLE (after first engagement, while minimised) ── */}
+      {isVisible && (hasEngaged || isOpen) && !isOpen && (
+        <div className="aib-bubble">
+          <button
+            onClick={() => setIsOpen(true)}
+            aria-label="Open assistant"
+            className="relative w-13 h-13 rounded-full cursor-pointer group"
+            style={{ width: 52, height: 52 }}
+          >
+            {/* Gradient ring */}
+            <span className="absolute inset-0 rounded-full bg-gradient-to-br from-[#5df7c1] to-[#5227FF] opacity-80 group-hover:opacity-100 transition-opacity" />
+            <span className="absolute inset-[2px] rounded-full bg-[#0c1118] flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-[#5df7c1]" />
+            </span>
+            {/* Unread pulse dot */}
+            <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#5df7c1] border-2 border-[#0c1118] animate-pulse" />
+          </button>
+        </div>
       )}
     </>
   );

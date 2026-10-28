@@ -1,13 +1,13 @@
 import PillNav from '@/components/PillNav';
 
 const navItems = [
-  { label: 'About',        href: '#about' },
-  { label: 'Skills',       href: '#skills' },
-  { label: 'Services',     href: '#services' },
-  { label: 'Projects',     href: '#projects' },
-  { label: 'Experience',   href: '#experience' },
-  { label: 'Testimonials', href: '#testimonials' },
-  { label: 'Contact',      href: '#contact' },
+  { label: 'About',      href: '#about' },
+  { label: 'Skills',     href: '#skills' },
+  { label: 'Services',   href: '#services' },
+  { label: 'Projects',   href: '#projects' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'How I Work', href: '#how-i-work' },
+  { label: 'Contact',    href: '#contact' },
 ];
 
 export function Navigation() {

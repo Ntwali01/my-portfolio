@@ -5,7 +5,7 @@ import { Skills } from '@/components/skills';
 import { Services } from '@/components/services';
 import { Projects } from '@/components/projects';
 import { Experience } from '@/components/experience';
-import { Testimonials } from '@/components/testimonials';
+import { HowIWork } from '@/components/testimonials';
 import { Contact } from '@/components/contact';
 import { Footer } from '@/components/footer';
 import { Toaster } from '@/components/ui/sonner';
@@ -21,14 +21,15 @@ export default function Home() {
       {/* Grainient background wraps About → Footer */}
       <div className="relative isolate">
         <GrainientBackground />
-        {/* Top fade to blend Hero into Grainient section */}
-        <div className="pointer-events-none absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background to-transparent z-10" />
+        {/* Solid cap + gradient fade to fully seal the hero/grainient boundary */}
+        <div className="pointer-events-none absolute top-0 left-0 right-0 h-4 z-10" style={{ background: 'oklch(0.08 0 0)' }} />
+        <div className="pointer-events-none absolute top-0 left-0 right-0 z-10" style={{ height: '180px', background: 'linear-gradient(to bottom, oklch(0.08 0 0) 0%, transparent 100%)' }} />
         <About />
         <Skills />
         <Services />
         <Projects />
         <Experience />
-        <Testimonials />
+        <HowIWork />
         <Contact />
         <Footer />
       </div>

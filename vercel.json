@@ -1,7 +1,6 @@
 {
-  "installCommand": "pnpm install --no-frozen-lockfile",
   "version": 2,
   "builds": [
-    { "src": "next.config.mjs", "use": "@vercel/next" }
+    { "src": "package.json", "use": "@vercel/next" }
   ]
 }
